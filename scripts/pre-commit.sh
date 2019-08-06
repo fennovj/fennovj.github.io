@@ -6,7 +6,7 @@
 
 # Run the python script that generates all the html
 # Potentially rename this to 'python' based on environment?
-python3 scripts/commit.py
+python3 scripts/pre-commit.py
 
 # Add the html directory (this directory should pretty much never be edited by hand)
 git add html
