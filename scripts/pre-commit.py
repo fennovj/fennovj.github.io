@@ -24,4 +24,3 @@ for fname in os.listdir('markdown'):
     # Then write the result to the output
     with open(output_fname, 'w+') as f:
         f.write(template.format(markdown = body))
-        

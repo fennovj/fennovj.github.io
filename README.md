@@ -13,6 +13,6 @@ The goals of this website are as follows:
 
 ## Instructions
 
-Other than index.html and about.html (which are in the root directory), all other static content is located in the 'html', 'js' and 'css' directories.
+Other than index.html, pages are markdowns that are rendered inside a template html. This can be done by running 'scripts/pre-commit.py'. For convenience sake, this can be done as a pre-commit hook. To install this pre-commit hook, run the command `ln -s -f ../../scripts/pre-commit.sh .git/hooks/pre-commit`. This will automatically render all html with the latest template, and add it to the commit.
 
-Also, other than the index.html and about.html, all other pages are markdowns that are rendered inside a template html. This can be done by running 'scripts/pre-commit.py'. For convenience sake, this can be done as a pre-commit hook. To install this pre-commit hook, run the command `ln -s -f ../../scripts/pre-commit.sh .git/hooks/pre-commit. This will automatically render all html with the latest template, and add it to the commit.
+Basically, this means the html folder should not be edited manually.

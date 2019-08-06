@@ -23,4 +23,3 @@ y = 'block'
 ---
 
 Horizontal line.
-
