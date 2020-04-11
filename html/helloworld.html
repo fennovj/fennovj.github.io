@@ -3,6 +3,7 @@
 <head>
 	<meta charset="utf-8"/>
 	<link rel="stylesheet" href="../css/style.css" type="text/css"/>
+	<link rel="stylesheet" href="../css/codehilite.css" type="text/css"/>
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans" type="text/css">
  </head>
  <body>
@@ -17,8 +18,9 @@
 	 	</div>
 	 	</nav>
  	</header>
-    <h1>Hello world!</h1>
+    <h1>Hello world</h1>
 <p>This is an 'article' purely to test out markdown features.</p>
+<p>General syntax overview can be found here: <a href="https://daringfireball.net/projects/markdown/syntax">https://daringfireball.net/projects/markdown/syntax</a></p>
 <p>Emphasis, with <em>asterisks</em> or <strong>underscores</strong>.</p>
 <ul>
 <li>A list</li>
@@ -30,9 +32,24 @@
 </ul>
 <p><a href="https://www.google.com">I'm an inline-style link</a>. <a href=".././">I'm an inline-style relative link</a>.</p>
 <p>Inline image: <img alt="alt-text" src="https://avatars3.githubusercontent.com/u/11553271?s=460&amp;v=4" /> Yeah!</p>
-<h2>Subheader</h2>
-<p><code>x = 'code'
-y = 'block'</code></p>
+<h2>Code</h2>
+<p>You can include inline code: <code>x = 3</code> like that.</p>
+<div class="codehilite"><pre><span></span><span class="err">x = &#39;code&#39;</span>
+<span class="err">y = &#39;block&#39;</span>
+</pre></div>
+
+
+<p>Example with highlighting:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="c1"># This requires the &#39;pygments&#39; package to be installed.</span>
+<span class="c1"># Without that, this will look like unhighlighted code.</span>
+<span class="n">x</span> <span class="o">=</span> <span class="s1">&#39;code&#39;</span>
+<span class="n">y</span> <span class="o">=</span> <span class="s1">&#39;highlight&#39;</span>
+</pre></div>
+</td></tr></table>
+
 <hr />
 <p>Horizontal line.</p>
  </body>
