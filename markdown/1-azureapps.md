@@ -1,5 +1,13 @@
 # Making Shiny apps in Linux container work in Azure App Service
 
+Some obstacles I encountered while getting it to work, and how I overcame them.
+
+---
+
+Fenno Vermeij, April 11, 2020
+
+---
+
 Over the last months and years, I have helped maintaining an infrastructure of shiny apps that me and my colleagues have created. First as plain R apps using [shiny-server](https://rstudio.com/products/shiny/shiny-server/), then moving them to Docker images, using [shinyproxy](https://www.shinyproxy.io/) to orchestrate the serving of containers. Recently, we decided to move our infrastructure to Azure. This has several advantages:
 
 * Azure App Service has built-in authentication using OAuth2, meaning without effort from our R programmers, we can add SSO that doesn't require us to handle any passwords. Customers can just log in with their usual microsoft account (which we add as a guest user to our Azure Tenant).
