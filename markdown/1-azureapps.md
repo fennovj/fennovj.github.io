@@ -11,7 +11,11 @@ While we are not completely finished with the migration, it is mostly done, and 
 
 ## Preventing sensitive data in the image
 
-When working with a container registry, you don't want data to enter the image, since anyone we can access the registry, can download the data in the image. Previously, we handled this by only giving sysadmins access to the registry, but that caused more work for us. In Azure App Service, linux containers can have [path mappings](https://docs.microsoft.com/en-us/azure/app-service/containers/how-to-serve-content-from-azure-storage). This allows us to create an Azure File Share, and mount it to the App Service. Then, we give only the relevant person access to this file share, and let them upload their data to that share. The share is mounted to `/data` or some other folder, where the programmer can then access it with their app. Here is an example of creating this path mapping with the AZ CLI. Unfortunately this feature is still in preview, so as far as I know, it is not supported in ARM templates yet.
+When working with a container registry, you don't want data to enter the image, since anyone we can access the registry, can download the data in the image. Previously, we handled this by only giving sysadmins access to the registry, but that caused more work for us.
+
+In Azure App Service, Linux containers can have [path mappings](https://docs.microsoft.com/en-us/azure/app-service/containers/how-to-serve-content-from-azure-storage). This allows us to create an Azure File Share, and mount it to the App Service. Then, we give only the relevant person access to this file share, and let them upload their data to that share. The share is mounted to `/data` or some other folder, where the programmer can then access it with their app.
+
+Here is an example of creating this path mapping with the AZ CLI. Unfortunately this feature is still in preview, so as far as I know, it is not supported in ARM templates yet.
 
     #!/bin/bash
     # data will be mounted to $data_dir in the app
@@ -29,9 +33,13 @@ When working with a container registry, you don't want data to enter the image, 
 
 ## Bug in httpuv with authentication
 
-Unfortunately, when enabling AAD authentication, the shiny apps stopped working. This is because Azure inserts some middleware, [easyauth](https://github.com/cgillum/easyauth), in between the user and the app when enabling AAD authentication. Unfortunately, this middleware inserts some headers that don't play nice with the package used in shiny for webtraffic: httpuv. This is the kind of issue that took me a few hours to debug: first I tried mindless googling, that didn't work, so I had to trace the issue exactly, and once I finally figured out where the issue lied, I remember one single, perfectly placed google search leading me to the stackoverflow post with the solution, [here](https://stackoverflow.com/questions/56797036/how-do-i-get-shiny-server-to-working-with-azure-active-directory/58541479#58541479). Thanks lhaferkamp!
+Unfortunately, when enabling AAD authentication, the shiny apps stopped working. This is because Azure inserts some middleware, [easyauth](https://github.com/cgillum/easyauth), in between the user and the app when enabling AAD authentication. Unfortunately, this middleware inserts some headers that don't play nice with the package used in shiny for webtraffic: httpuv.
 
-The issue ended up being a bug in httpuv version 1.5.2 and prior. For now, the most recent version on CRAN is 1.5.2, so in our Dockerfile, we have to install a development version of httpuv using `RUN R -e "devtools::install_github('rstudio/httpuv')"`. Once version 1.5.3 is released, we can remove that hack.
+This is the kind of issue that took me a few hours to debug: first I tried mindless googling, that didn't work, so I had to trace the issue exactly, and once I finally figured out where the issue lied, I remember one single, perfectly placed google search leading me to the stackoverflow post with the solution, [here](https://stackoverflow.com/questions/56797036/how-do-i-get-shiny-server-to-working-with-azure-active-directory/58541479#58541479). Thanks lhaferkamp!
+
+The issue ended up being a bug in httpuv version 1.5.2 and prior.
+
+For now, the most recent version on CRAN is 1.5.2, so in our Dockerfile, we have to install a development version of httpuv using `RUN R -e "devtools::install_github('rstudio/httpuv')"`. Once version 1.5.3 is released, we can remove that hack.
 
 ## Websockets don't work with AAD Authentication
 
@@ -58,7 +66,9 @@ Remember, we can add this file with something like `COPY shiny-server.conf /etc/
 
 When enabling authentication, you will have to create 2 resources in the Azure Active Directory: an enterprise app, which handles the actual connection to the app, including the login/logout urls, and the service principal, which has the list of users that are allowed to access the app. The service principal is relatively straightforward, and I didn't have any issues with it. However, the enterprise app has some specific settings that tripped me up.
 
-First of all, the authentication settings. Mostly, the default settings do fine, but remember you only have to enable 'ID tokens' as an implicit grant. If you turn this option off, the app won't work. If you turn 'Access tokens' on, the app will still work, but there's not much point. Also, just set the account type to single tenant. Either it's a public app, which means anyone can access it without logging in, or it's a single-tenant app, which means you, and your customers (read: guest users) can log in. Multitenant has it's uses, but it's more difficult to configure, so I reccommend just sticking with single tenant if it suits your need.
+First of all, the authentication settings. Mostly, the default settings do fine, but remember you only have to enable 'ID tokens' as an implicit grant. If you turn this option off, the app won't work. If you turn 'Access tokens' on, the app will still work, but there's not much point.
+
+Also, just set the account type to single tenant. Either it's a public app, which means anyone can access it without logging in, or it's a single-tenant app, which means you, and your customers (read: guest users) can log in. Multitenant has it's uses, but it's more difficult to configure, so I reccommend just sticking with single tenant if it suits your need.
 
 ![Example of authentication settings](../static/1-azureapps/authentication.png)
 
@@ -93,7 +103,8 @@ Lastly, a quick tip on enabling https with a custom domain. I definitely reccomm
         }
     }
 
-Then, you don't need to mess around with wildcard certificates to enable https on your App Service. We can automatically create what's called an 'App Service Managed Certificate', another preview feature which was one of the reasons for switching to Azure: all this stuff just seems to go automatically in Azure. The only thing Azure needs is for the CNAME record to be set, proving you own the domain.
+Then, you don't need to mess around with wildcard certificates to enable https on your App Service. We can automatically create what's called an 'App Service Managed Certificate', another preview feature which was one of the reasons for switching to Azure: all this stuff just seems to go automatically in Azure.
+The only thing Azure needs is for the CNAME record to be set, proving you own the domain.
 
 ![Creating a managed certificate in Azure](../static/1-azureapps/managedcertificate.png)
 

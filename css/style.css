@@ -8,7 +8,7 @@ body {
 	font-size:16px;
 	line-height:1.4;
 	padding: 1em;
-	max-width: 800px;
+	max-width: 1000px;
 	margin: 2em auto;
 	text-align: justify;
 }
@@ -46,4 +46,8 @@ a {
 .nav-right {
 	float: right;
 	margin-right: 60px;
+}
+
+img {
+	width: 100%;
 }
