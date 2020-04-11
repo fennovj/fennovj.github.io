@@ -8,7 +8,7 @@ body {
 	font-size:16px;
 	line-height:1.4;
 	padding: 1em;
-	max-width: 800px;
+	max-width: 900px;
 	margin: 2em auto;
 	text-align: justify;
 }
@@ -49,5 +49,23 @@ a {
 }
 
 img {
-	width: 100%;
+	max-width: 100%;
+}
+
+hr {
+	border-top: 1px solid;
+	color: rgba(0, 0, 0, 0.1);;
+	left: 50%;
+}
+
+.row {
+	display: flex;
+}
+  
+.column-small {
+	flex: 20%;
+}
+
+.column-large {
+	flex: 80%;
 }

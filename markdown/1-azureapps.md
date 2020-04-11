@@ -1,6 +1,6 @@
 # Making Shiny apps in Linux container work in Azure App Service
 
-Some obstacles I encountered while getting it to work, and how I overcame them.
+## Some obstacles I encountered while getting it to work, and how I overcame them
 
 ---
 
