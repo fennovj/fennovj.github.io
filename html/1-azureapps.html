@@ -45,7 +45,7 @@
  8
  9
 10
-11</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="ch">#!/bin/bash</span>
+11</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><code><span class="ch">#!/bin/bash</span>
 <span class="c1"># data will be mounted to $data_dir in the app</span>
 <span class="c1"># $resource_name is the name of the Web App Service</span>
 <span class="c1"># hopefully all other variable names speak for themselves</span>
@@ -56,7 +56,7 @@ az webapp config storage-account add -g <span class="nv">$resource_group</span> 
     --share-name share-001 <span class="se">\</span>
     --mount-path <span class="nv">$data_dir</span> <span class="se">\</span>
     --access-key <span class="s2">&quot;</span><span class="k">$(</span>az storage account keys list -n <span class="nv">$storage_account_name</span> <span class="p">|</span> jq <span class="s1">&#39;.[0][&quot;value&quot;]&#39;</span> -r<span class="k">)</span><span class="s2">&quot;</span>
-</pre></div>
+</code></pre></div>
 </td></tr></table>
 
 <p><img alt="Example of configuring a path mapping in an Web App Service" src="../static/1-azureapps/pathmappings.png" /></p>
@@ -68,7 +68,7 @@ az webapp config storage-account add -g <span class="nv">$resource_group</span> 
 <h2>Websockets don't work with AAD Authentication</h2>
 <p>This manifested itself in a public shiny app working, but a private shiny app just showing some blank or non-functional page. Inspecting the console revealed that the page 'quit' after attempting to setup a websocket connection. After some googling, I found <a href="https://feedback.azure.com/forums/169385-web-apps/suggestions/36489109-add-support-for-websocket-connections-when-aad-aut">this page on the Azure feedback forum</a> where somebody mentioned websockets aren't supported with AAD Authentication on, and asked for this to be added... a year ago. There is no response on this issue yet, so I don't expect this to fixed soon. Luckily, we can disable websockets in shiny, by using shiny-server in our docker image!</p>
 <p>Basically, we enforced everyone to use the <a href="https://hub.docker.com/r/rocker/shiny-verse">rocker/shiny-verse</a> base image, which is an image that comes with tidyverse, shiny, shiny-server. These are requirements for basically every shiny app, and the last of the three allows us to use websockets. We add a shiny-server.conf file like this:</p>
-<div class="codehilite"><pre><span></span><span class="n">run_as</span> <span class="n">shiny</span><span class="p">;</span>
+<div class="codehilite"><pre><span></span><code><span class="n">run_as</span> <span class="n">shiny</span><span class="p">;</span>
 
 <span class="n">server</span> <span class="err">{</span>
 
@@ -80,7 +80,7 @@ az webapp config storage-account add -g <span class="nv">$resource_group</span> 
     <span class="n">log_dir</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/</span><span class="n">shiny</span><span class="o">-</span><span class="n">server</span><span class="p">;</span>
 <span class="err">}</span>
 <span class="err">}</span>
-</pre></div>
+</code></pre></div>
 
 
 <p>Remember, we can add this file with something like <code>COPY shiny-server.conf /etc/shiny-server/shiny-server.conf</code>. That will make sure websockets are disabled.</p>
@@ -93,11 +93,11 @@ az webapp config storage-account add -g <span class="nv">$resource_group</span> 
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3
-4</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="ch">#!/bin/bash</span>
+4</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><code><span class="ch">#!/bin/bash</span>
 <span class="c1"># resource_name is the name of the service principal name you created</span>
 <span class="nv">spAppId</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>az ad app list --display-name <span class="nv">$resource_name</span> <span class="p">|</span> jq <span class="s1">&#39;.[0][&quot;appId&quot;]&#39;</span> -r<span class="k">)</span><span class="s2">&quot;</span>
 az ad app permission admin-consent --id <span class="nv">$spAppId</span>
-</pre></div>
+</code></pre></div>
 </td></tr></table>
 
 <p>Beware you do need to have the role of 'Application administrator' to do this.</p>
@@ -117,7 +117,7 @@ az ad app permission admin-consent --id <span class="nv">$spAppId</span>
 11
 12
 13
-14</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="c1">// domain_name is the domain of the website (example: test.com)</span>
+14</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><code><span class="c1">// domain_name is the domain of the website (example: test.com)</span>
 <span class="c1">// resource_name is the name of the Web App Service</span>
 <span class="p">{</span>
     <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;Microsoft.Network/dnszones/CNAME&quot;</span><span class="p">,</span>
@@ -131,7 +131,7 @@ az ad app permission admin-consent --id <span class="nv">$spAppId</span>
         <span class="s2">&quot;targetResource&quot;</span><span class="o">:</span> <span class="p">{}</span>
     <span class="p">}</span>
 <span class="p">}</span>
-</pre></div>
+</code></pre></div>
 </td></tr></table>
 
 <p>Then, you don't need to mess around with wildcard certificates to enable https on your App Service. We can automatically create what's called an 'App Service Managed Certificate', another preview feature which was one of the reasons for switching to Azure: all this stuff just seems to go automatically in Azure.

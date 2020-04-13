@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+	<meta charset="utf-8"/>
+	<link rel="stylesheet" href="../css/style.css" type="text/css"/>
+	<link rel="stylesheet" href="../css/codehilite.css" type="text/css"/>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans" type="text/css">
+ </head>
+ <body>
+ 	<header role="banner" class="site-header sticky">
+	 	<nav>
+	 	<div class="nav-left">
+		<a href=".././" class="title">fenno.dev</a>
+	 	</div>
+	 	<div class="nav-right">
+		<a href=".././">home</a>
+		<a href="../html/about.html">about</a>
+	 	</div>
+	 	</nav>
+ 	</header>
+    <h1>Future topics for articles</h1>
+<h2>Overview of things I plan to (eventually) write about, a growing list</h2>
+<hr />
+<p>Fenno Vermeij, April 13, 2020</p>
+<hr />
+<p>In this list, I will... list... the topics I plan to write about. Keep in mind I will add topics to this list as I come up with them. No promises or anything, but just to act as inspiration for myself.</p>
+<h3>Iterrows vs itertuples</h3>
+<p>The advantages of <code>itertuples</code> are well known, but I still can't find a blog that shows the functional differences between <code>iterrows</code> and <code>itertuples</code>, such as the fact that column names containing whitespaces are renamed with <code>itertuples</code>, and dtypes possibly changing. For just the timing differences, <a href="https://towardsdatascience.com/how-to-make-your-pandas-loop-71-803-times-faster-805030df4f06">I found this blog</a> to be very helpful.</p>
+<h3>Geodata using Python/R, both feature and raster data, and explaining geo-joins</h3>
+<p>I'm far from the first to write about geodata, but I still think I can write a short and sweet summary of the tools in R/Python, specifically for data scientists, to easily work with geodata. Also, I am fascinated by geo-joins, using geo-indexes, and how much faster they are than brute-force vertical lookups, so I think it would be a nice challenge to visualize those.</p>
+<h3>Quantile Regression, both Meinshausen and Tilted loss</h3>
+<p>A topic that is known, but not super well known as it (in my opinion) should be. Quantiles can be very useful in regression: instead of predicting a single number, we can predict a 95% confidence interval. This costs extra training time, but little to no programming or extra data is required. The main two methods I'm aware of are the Meinshausen method, specifically for random forests, and the tilted loss method, that can be used for anything else. Also, there is a fun trick the ranger package uses to massively speed up the Meinshausen method, at the cost of performance, which I think is not as well known as it should be.</p>
+<h3>Azure pipelines</h3>
+<p>This is more of a 'my personal experience' idea: I have written couple of python-specific azure pipelines. I am certainly not an expert on this, so it would be more of a 'getting started with some simple stuff' blog.</p>
+<h3>Personal learning project - deploying sklearn model as Python/Java/C/Go</h3>
+<p>This isn't something I have experience with, but I think it would be really cool to dive in some of these languages I last used in university, and build a machine learning model in them. Then, do some benchmarking, and see if I can even deploy some of them to web services, for instance using Azure Functions, and benchmark them there as well. This would be an interesting comparison to see some of the advantages of transpiling SKLearn models, as well as just being a cool and interesting personal project.</p>
+<p>Ther are some interesting approaches and code examples <a href="https://stackoverflow.com/questions/12738827/how-can-i-call-scikit-learn-classifiers-from-java">in this stackoverflow post</a></p>
+<h3>Summarizing my findings from studying for AZ-204</h3>
+<p>I almost achieved the AZ-204 certificate, and I could write some of my summaries and learnings there. For now, I have collected my notes <a href="https://github.com/fennovj/azure-notes">on this Github repository</a>, but it's by no means a summary or collection of most interesting topics. After AZ-204, I plan to go for either AZ-400, DP-201, or perhaps DP-100, so I could do the same for those.</p>
+ </body>
