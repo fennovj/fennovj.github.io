@@ -13,6 +13,11 @@ body {
 	text-align: justify;
 }
 
+code, pre, pre code {
+  text-align: left;
+  white-space: pre; /* preserves spacing */
+}
+
 a {
 	color: #07a;
 }

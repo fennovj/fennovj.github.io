@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+	<meta charset="utf-8"/>
+	<link rel="stylesheet" href="../css/style.css" type="text/css"/>
+	<link rel="stylesheet" href="../css/codehilite.css" type="text/css"/>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans" type="text/css">
+ </head>
+ <body>
+ 	<header role="banner" class="site-header sticky">
+	 	<nav>
+	 	<div class="nav-left">
+		<a href=".././" class="title">fenno.dev</a>
+	 	</div>
+	 	<div class="nav-right">
+		<a href=".././">home</a>
+		<a href="../html/about.html">about</a>
+	 	</div>
+	 	</nav>
+ 	</header>
+    <h1>Using Bruno with Databricks and Azure CLI</h1>
+<h2>Using Bruno with Azure Databricks and Azure CLI, without a Key Vault</h2>
+<hr />
+<p>Fenno Vermeij, November 9, 2025</p>
+<hr />
+<p>I couldn't find any good documentation on this (I probably didn't look good enough, because this seems like a very common usecase)</p>
+<p>Also, this blog is not going to be as long and wordy as previous ones, since the goal is just to show how I solved it. I will assume you are already familliar and have installed Bruno and the Azure CLI. Also, this tutorial is intended to work with Azure Databricks, not AWS or Google Cloud. I will not be using Databricks PAT tokens, since with them, the solution becomes trivial.</p>
+<p>However, to make it easier for myself, I will use the <code>az cli</code> as a child process, rather than making a rest api call to <code>login.microsoftonline.com</code>, which is the default way to obtain tokens (examples: <a href="https://blog.jongallant.com/2021/02/azure-rest-apis-postman-2021/">here</a> and <a href="https://github.com/fennovj/azure-api-auth/">here</a>.)</p>
+<p>Bruno now has <a href="https://docs.usebruno.com/secrets-management/secret-managers/azure-key-vault/cli-authentication">Azure CLI for Key Vault integration</a>, but just for using the Key Vault as a secret manager. I don't need a secret manager, since I just want to use my Azure CLI Credentials.</p>
+<p>Also, I hope/think there is probably a better way to do this natively in Bruno, but I haven't found it.</p>
+<h2>Connecting to Azure Databricks</h2>
+<p>1) Create a collection for your Azure Databricks requests. Under 'script', enter the following:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">execSync</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">require</span><span class="p">(</span><span class="s1">&#39;child_process&#39;</span><span class="p">);</span>
+
+<span class="k">const</span><span class="w"> </span><span class="n">expiresOn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bru</span><span class="o">.</span><span class="n">getVar</span><span class="p">(</span><span class="s1">&#39;expires_on&#39;</span><span class="p">)</span><span class="w"> </span><span class="err">??</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="k">const</span><span class="w"> </span><span class="n">now</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">Date</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1000</span><span class="p">);</span>
+
+<span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">expiresOn</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">now</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">60</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="o">//</span><span class="w"> </span><span class="n">Get</span><span class="w"> </span><span class="n">access</span><span class="w"> </span><span class="n">token</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">Azure</span><span class="w"> </span><span class="n">CLI</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">resp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">execSync</span><span class="p">(</span><span class="s1">&#39;/opt/homebrew/bin/az account get-access-token --scope=2ff814a6-3304-4ab8-85cb-cd0e6f879c1d/.    default&#39;</span><span class="p">);</span><span class="w">  </span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">tokenData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">resp</span><span class="p">);</span>
+<span class="w">  </span><span class="n">bru</span><span class="o">.</span><span class="n">setVar</span><span class="p">(</span><span class="s1">&#39;databricks_token&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">tokenData</span><span class="o">.</span><span class="n">accessToken</span><span class="p">);</span>
+<span class="w">  </span><span class="n">bru</span><span class="o">.</span><span class="n">setVar</span><span class="p">(</span><span class="s1">&#39;expires_on&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">tokenData</span><span class="o">.</span><span class="n">expires_on</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>This script will, before every request, see if the token is still valid (for at least 60 more seconds), and if not, request one using the Azure CLI. This means you must have an active Azure CLI credential, which is created with <code>az login</code>. (This step is not done in Bruno, since in practice, I always have an active Azure CLI credential.)</p>
+<p>Here, you may want to replace the <code>/opt/homebrew/bin/az</code> with whatever path to your az cli executable. The <code>2ff..c1d</code> token is global, and simply refers to the resource ID for the Azure Databricks service.</p>
+<p>Next, under 'auth', select Bearer token, and enter <code>{{databricks_token}}</code></p>
+<p>I would also recommend, under 'Vars', create variables such as 'account_id' and 'workspace_instance_name', although the latter may be difficult if you have many workspaces.</p>
+<p>Some example requests to test if it is working:</p>
+<ul>
+<li><code>GET https://accounts.azuredatabricks.net/api/2.0/accounts/{{account_id}}/metastores</code> (must be account admin to call this endpoint)</li>
+<li><code>GET https://{{workspace_instance_name}}/api/2.1/clusters/list</code></li>
+</ul>
+<h2>Connecting to the ARM/Graph API</h2>
+<p>We can use a nearly-identical trick to obtain tokens for the ARM and Graph API. We just need to change the scopes when requesting tokens:</p>
+<ul>
+<li><code>/opt/homebrew/bin/az account get-access-token --scope=https://graph.microsoft.com/.default</code></li>
+<li><code>/opt/homebrew/bin/az account get-access-token --scope=https://management.core.windows.net/.default</code></li>
+</ul>
+<p>Here is an example script:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">execSync</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">require</span><span class="p">(</span><span class="s1">&#39;child_process&#39;</span><span class="p">);</span>
+
+<span class="k">const</span><span class="w"> </span><span class="n">expiresOn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bru</span><span class="o">.</span><span class="n">getVar</span><span class="p">(</span><span class="s1">&#39;expires_on&#39;</span><span class="p">)</span><span class="w"> </span><span class="err">??</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="k">const</span><span class="w"> </span><span class="n">now</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">Date</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1000</span><span class="p">);</span>
+
+<span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">expiresOn</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">now</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">60</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="o">//</span><span class="w"> </span><span class="n">Get</span><span class="w"> </span><span class="n">Graph</span><span class="w"> </span><span class="n">access</span><span class="w"> </span><span class="n">token</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">Azure</span><span class="w"> </span><span class="n">CLI</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">resp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">execSync</span><span class="p">(</span><span class="s1">&#39;/opt/homebrew/bin/az account get-access-token --scope=https://graph.microsoft.com/.default&#39;</span><span class="p">);</span><span class="w">  </span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">tokenData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">resp</span><span class="p">);</span>
+<span class="w">  </span><span class="n">bru</span><span class="o">.</span><span class="n">setVar</span><span class="p">(</span><span class="s1">&#39;token&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">tokenData</span><span class="o">.</span><span class="n">accessToken</span><span class="p">);</span>
+<span class="w">  </span><span class="n">bru</span><span class="o">.</span><span class="n">setVar</span><span class="p">(</span><span class="s1">&#39;expires_on&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">tokenData</span><span class="o">.</span><span class="n">expires_on</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Again, go to <code>auth</code>, select <code>Bearer token</code>, and enter <code>{{token}}</code> as the token.</p>
+<p>Some example requests to test:</p>
+<ul>
+<li><code>GET https://graph.microsoft.com/v1.0/groups/</code> (requires Graph scope)</li>
+<li><code>GET https://management.azure.com/subscriptions/{{subscription_id}}/providers/Microsoft.Storage/storageAccounts?api-version=2024-01-01</code> (requires ARM scope)</li>
+</ul>
+ </body>
