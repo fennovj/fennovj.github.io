@@ -2,7 +2,7 @@
 
 Code for personal website. This is still very much a work in progress for now.
 
-Hosted on [fenno.dev](https://fenno.dev) with github pages.
+Hosted on [fennovj.github.io](https://fennovj.github.io/) with github pages.
 
 I am not planning on adding 'advanced' features like search or tags for articles, because I am not expecting many people to read this website anyway.
 The goals of this website are as follows:
