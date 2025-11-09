@@ -2,7 +2,9 @@
 
 ![that's me](https://avatars3.githubusercontent.com/u/11553271?s=460&v=4)
 
-My name is Fenno Vermeij, I currently live in Ede and work at Ynformed in Utrecht (which is a daughter company of RoyalHaskoningDHV).
+My name is Fenno Vermeij, I currently live in Schiedam and work at Eneco in Rotterdam.
+
+*This page is quite outdated and was written in 2020. Currently, I work as a platform engineer, managing the Databricks platform at Eneco. I am still interested in Machine Learning though :)*
 
 I am currently very interested in Bayesian Statistics, API design, and Cloud infrastructure. I also really enjoy talking about Data Science and sharing new things, which my colleagues have noticed :).
 
